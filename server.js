@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 
 const app = express();
-const port = 3000;
+const PORT = 3000;
 
 // Serve static files from public folder
 app.use(express.static(path.join(__dirname, 'public')));
@@ -14,8 +14,45 @@ app.get('/form', (req, res) => {
 
 // Route for success page
 app.get('/success_page', (req, res) => {
-    res.send('<h1>Thank you for your feedback!</h1>');
+    res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Success</title>
+            <link href="/styles.css" rel="stylesheet">
+            <style>
+                .back-button {
+                    display: inline-block;
+                    margin-top: 30px;
+                    padding: 15px 30px;
+                    background-color: #007BFF;
+                    color: white;
+                    font-size: 18px;
+                    text-decoration: none;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                }
+
+                .back-button:hover {
+                    background-color: #0056b3;
+                }
+
+                body {
+                    text-align: center;
+                    padding: 100px;
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f4f4;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>🎉 Thank you for your feedback!</h1>
+            <a href="/form" class="back-button">Give More Feedback</a>
+        </body>
+        </html>
+    `);
 });
+
 
 // Start the server
 app.listen(PORT, () => {
