@@ -1,8 +1,32 @@
 const express = require('express');
 const path = require('path');
 
+//for data storage 
+const fs = require('fs');
+const dataPath = './data/feedbackData.json'
+
 const app = express();
 const PORT = 3000;
+
+//Create functions for reading and writing counts
+//read
+function readCounts() {
+  try {
+    const data = fs.readFileSync(dataPath);
+    return JSON.parse(data);
+  } catch (error) {
+    console.log("Error encountered reading the JSON:", err);
+    return {};
+  }
+}
+
+function writeCounts(counts) {
+    try {
+        fs.writeFileSync(dataPath, JSON.stringify(counts, null, 2));
+    } catch (err) {
+        console.error("Error writing JSON file:", err);
+    }
+}
 
 // Serve static files from public folder
 app.use(express.static(path.join(__dirname, 'public')));
@@ -14,6 +38,15 @@ app.get('/form', (req, res) => {
 
 // Route for success page
 app.get('/success_page', (req, res) => {
+    const source = req.query.feedback;
+    const counts = readCounts();
+
+    if (source && counts.hasOwnProperty(source)) {
+        counts[source]++;
+        writeCounts(counts);
+        console.log(`[✅] ${source} +1 ->`, counts[source]);
+    }
+
     res.send(`
         <!DOCTYPE html>
         <html>
