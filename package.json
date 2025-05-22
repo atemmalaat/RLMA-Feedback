@@ -1,0 +1,11 @@
+{
+  "name": "rlma-feedback",
+  "version": "1.0.0",
+  "main": "feedbackapp.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "atem bior",
+  "license": "ISC",
+  "description": ""
+}
