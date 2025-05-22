@@ -1,87 +1,81 @@
-const http = require('http');
+const express = require('express');
+const path = require('path');
 
-const server = http.createServer(routing);
+const app = express();
+const port = 3000;
 
+// Serve static files from public folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Route for feedback form
+app.get('/form', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+
+// Route for success page
+app.get('/success_page', (req, res) => {
+    res.send('<h1>Thank you for your feedback!</h1>');
+});
+
+// Start the server
+app.listen(PORT, () => {
+    console.log(`🔥 Server listening at http://localhost:${PORT}`);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 function routing(req, res) {
     let url = req.url;
-    if (url.startsWith('/form')) {
+
+    if (url === '/public/styles.css') {
+        const cssPath = path.join(__dirname, 'public', 'styles.css');
+        fs.readFile(cssPath, (err, data) => {
+            if (err) {
+                res.writeHead(404);
+                res.end("CSS not found");
+            } else {
+                res.writeHead(200, {"Content-Type": "text/css"});
+                res.write(data);
+                res.end();
+            }
+        });
+    } else if (url.startsWith('/form')) {
         res.writeHead(200, {"Content-Type": "text/html"});
         res.write(`
             <html>
     <head>
       <title>Feedback Form</title>
-      <style>
-        body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-          padding: 20px;
-          margin: 0;
-          background-color: #f9f9f9;
-        }
-
-        form {
-          max-width: 500px;
-          margin: auto;
-          background-color: #fff;
-          padding: 30px;
-          border-radius: 10px;
-          box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        p {
-          font-size: 1.2em;
-          margin-bottom: 20px;
-        }
-
-        label {
-          display: block;
-          font-size: 1.1em;
-          padding: 10px 0;
-          cursor: pointer;
-        }
-
-        input[type="radio"] {
-          margin-right: 10px;
-          transform: scale(1.3);
-        }
-
-        input[type="submit"],
-        input[type="reset"] {
-          padding: 12px 20px;
-          font-size: 1em;
-          margin: 10px 5px 0 0;
-          border: none;
-          border-radius: 5px;
-          background-color: #007AFF;
-          color: white;
-          cursor: pointer;
-          transition: background-color 0.3s ease;
-        }
-
-        input[type="reset"] {
-          background-color: #ccc;
-          color: #333;
-        }
-
-        input[type="submit"]:hover {
-          background-color: #005FCC;
-        }
-
-        input[type="reset"]:hover {
-          background-color: #bbb;
-        }
-
-        @media (max-width: 768px) {
-          form {
-            padding: 20px;
-          }
-
-          input[type="submit"],
-          input[type="reset"] {
-            width: 100%;
-            margin: 10px 0;
-          }
-        }
-      </style>
+      <link href="/public/styles.css" rel="stylesheet">
     </head>
     <body>
       <form action="/success_page">
@@ -123,3 +117,4 @@ function routing(req, res) {
 server.listen(3000, () => {
     console.log("Server listening on port 3000... ");
 })
+*/
