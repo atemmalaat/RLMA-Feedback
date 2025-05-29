@@ -1,74 +1,168 @@
-#RLMA_Title {
-    
+
+/* Base styles and user's original styles, heavily modified and augmented for full-screen layout */
+html, body {
+    height: 100%; /* Ensure html and body take full viewport height */
+    margin: 0; /* Remove default margins */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; /* User's specified font */
+    background-color: #f9f9f9; /* User's specified background color */
+    display: flex; /* Enable flexbox for overall layout */
+    flex-direction: column; /* Stack children (title, form) vertically */
 }
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    padding: 20px;
-    margin: 0;
-    background-color: #f9f9f9;
+#RLMA_Title { /* Styles for the main heading */
+    text-align: center;
+    padding: 20px 10px; /* Padding for the title */
+    background-color: #ffffff; /* White background for the title area */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+    flex-shrink: 0; /* Prevent the title from shrinking if content is too large */
+    font-size: 1.6em; /* Readable title font size */
+    color: #333; /* Dark grey color for title text */
 }
 
 form {
-    max-width: 500px;
-    margin: auto;
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    flex-grow: 1; /* Allow the form to take all available remaining vertical space */
+    display: flex; /* Enable flexbox for form's internal layout */
+    flex-direction: column; /* Stack form children (paragraph, options, actions) vertically */
+    background-color: #ffffff; /* Form background */
+    width: 100%; /* Form takes full width */
+    overflow: hidden; /* Prevent scrollbars on the form itself; scrolling handled within options if needed */
+    /* Overriding user's original form styling for full-screen effect */
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
 }
 
-p {
-    font-size: 1.2em;
-    margin-bottom: 20px;
+/* The paragraph providing context/instruction for the radio buttons */
+form > p { /* Targeting direct child 'p' of the form */
+    font-size: 1.1em; /* Adjusted for better balance */
+    padding: 15px 20px; /* Padding for the instruction paragraph */
+    margin-bottom: 0; /* Remove bottom margin as options follow directly */
+    text-align: center; /* Center the instruction text */
+    background-color: #f0f0f0; /* Slightly different background to distinguish this section */
+    color: #555; /* Medium grey text color */
+    flex-shrink: 0; /* Prevent this paragraph from shrinking */
+}
+
+/* Container specifically for the radio buttons and their labels */
+.radio-options-container {
+    flex-grow: 1; /* This container takes up the bulk of the available space in the form */
+    display: flex; /* Use flexbox to arrange labels */
+    flex-direction: column; /* Stack labels vertically */
+    overflow-y: auto; /* Add vertical scroll if options exceed screen height (unlikely with flex-grow on labels) */
 }
 
 label {
-    display: block;
-    font-size: 1.1em;
-    padding: 10px 0;
-    cursor: pointer;
+    display: flex; /* Use flex to align radio button and text within the label */
+    align-items: center; /* Vertically center radio button and text */
+    font-size: 1.8em; /* Significantly larger font for label text */
+    padding: 20px 25px; /* Increased padding for a larger touch area and visual spacing */
+    cursor: pointer; /* Indicate interactivity */
+    flex-grow: 1; /* Each label will try to take an equal share of the vertical space in .radio-options-container */
+    border-bottom: 1px solid #e0e0e0; /* Separator line between options */
+    transition: background-color 0.2s ease; /* Smooth transition for hover/focus */
+    color: #333; /* Text color for labels */
+}
+
+label:last-child {
+    border-bottom: none; /* Remove border from the last option for a cleaner look */
+}
+
+label:hover,
+label:focus-within { /* Enhance interactivity feedback on hover and when radio inside is focused */
+    background-color: #e8f4ff; /* Light blue background for hover/focus, more noticeable */
 }
 
 input[type="radio"] {
-    margin-right: 10px;
-    transform: scale(1.3);
+    margin-right: 20px; /* Space between radio button and its text */
+    transform: scale(2.2); /* Make the radio button itself much larger */
+    cursor: pointer; /* Ensure cursor indicates interactivity on the radio button itself */
+    accent-color: #007AFF; /* Modern way to style the checked radio button's color */
+}
+
+/* Styling for the container of form action buttons (submit/reset) */
+.form-actions {
+    padding: 15px 20px; /* Padding around the buttons */
+    background-color: #f7f7f7; /* Light background for the actions area */
+    flex-shrink: 0; /* Prevent this area from shrinking */
+    display: flex; /* Use flexbox to arrange buttons */
+    justify-content: space-around; /* Distribute space around buttons */
+    gap: 10px; /* Space between buttons */
+    border-top: 1px solid #dddddd; /* Separator line above the action buttons */
 }
 
 input[type="submit"],
 input[type="reset"] {
-    padding: 12px 20px;
-    font-size: 1em;
-    margin: 10px 5px 0 0;
-    border: none;
-    border-radius: 5px;
-    background-color: #007AFF;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    padding: 12px 20px; /* Original padding */
+    font-size: 1em; /* Original font-size */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Original border-radius */
+    background-color: #007AFF; /* Original submit button color */
+    color: white; /* Text color for submit button */
+    cursor: pointer; /* Indicate interactivity */
+    transition: background-color 0.3s ease; /* Smooth transition for hover */
+    flex-basis: 48%; /* Each button takes up almost half the space, allowing for gap */
+    flex-grow: 0; /* Prevent buttons from growing beyond their basis */
 }
 
 input[type="reset"] {
-    background-color: #ccc;
-    color: #333;
+    background-color: #6c757d; /* A common grey for reset/cancel buttons */
+    color: white; /* Text color for reset button */
 }
 
 input[type="submit"]:hover {
-    background-color: #005FCC;
+    background-color: #0056b3; /* Darker blue on hover for submit button */
 }
 
 input[type="reset"]:hover {
-    background-color: #bbb;
+    background-color: #5a6268; /* Darker grey on hover for reset button */
 }
 
+/* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
-    form {
-        padding: 20px;
+    #RLMA_Title {
+        font-size: 1.4em; /* Slightly smaller title on mobile */
+        padding: 15px 10px;
     }
-
+    form > p {
+        font-size: 1em; /* Smaller instruction text on mobile */
+        padding: 10px 15px;
+    }
+    label {
+        font-size: 1.4em; /* Adjust label font size for smaller screens */
+        padding: 18px 20px; /* Slightly less padding on smaller screens */
+    }
+    input[type="radio"] {
+        transform: scale(1.8); /* Slightly smaller radio button on mobile */
+        margin-right: 15px;
+    }
+    .form-actions {
+        flex-direction: column; /* Stack action buttons vertically on small screens */
+        padding: 15px;
+    }
     input[type="submit"],
     input[type="reset"] {
-        width: 100%;
-        margin: 10px 0;
+        width: 100%; /* Make buttons take full width when stacked */
+        margin: 5px 0; /* Add some vertical margin between stacked buttons */
+        flex-basis: auto; /* Reset flex-basis for stacked layout */
+    }
+}
+
+/* Adjustments for short but wide screens (e.g., landscape tablets or small desktop windows) */
+@media (max-height: 600px) and (min-width: 769px) {
+    label {
+        font-size: 1.3em; /* Further reduce font size if height is constrained */
+        padding: 15px 20px; /* Adjust padding */
+    }
+    input[type="radio"] {
+        transform: scale(1.8); /* Adjust radio scale */
+    }
+        #RLMA_Title {
+        font-size: 1.3em;
+        padding: 10px;
+    }
+    form > p {
+        font-size: 0.9em;
+        padding: 8px 15px;
     }
 }

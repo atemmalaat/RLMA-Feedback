@@ -2,26 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Feedback Form</title>
-    <link href="/styles.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Form - Robot Lawn Mowers Australia</title>
+    <link href="/styles.css" rel="stylesheet"> 
 </head>
 <body>
-    <form action="/success_page">
-        <p>How did you hear about us?</p><br><br>
-        <input type="radio" id="facebook" name="feedback" value="facebook">
-        <label for="facebook">Facebook</label><br>
-        <input type="radio" id="instagram" name="feedback" value="instagram">
-        <label for="instagram">Instagram</label><br>
-        <input type="radio" id="google" name="feedback" value="google">
-        <label for="google">Google</label><br>
-        <input type="radio" id="tv" name="feedback" value="tv">
-        <label for="tv">TV</label><br>
-        <input type="radio" id="tiktok" name="feedback" value="tiktok">
-        <label for="tiktok">TikTok</label><br>
-        <input type="radio" id="people" name="feedback" value="people">
-        <label for="people">People</label><br>
-        <input type="submit" value="Submit">
-        <input type="reset" value="Reset">
+    <h1 id="RLMA_Title">Robot Lawn Mowers Australia</h1>
+
+    <form action="/success_page" method="GET">
+        <p>How did you hear about us?</p>
+
+        <div class="radio-options-container">
+            <label>
+                <input type="radio" name="feedback" value="facebook" required>
+                <span>Facebook</span>
+            </label>
+            <label>
+                <input type="radio" name="feedback" value="instagram">
+                <span>Instagram</span>
+            </label>
+            <label>
+                <input type="radio" name="feedback" value="google">
+                <span>Google</span>
+            </label>
+            <label>
+                <input type="radio" name="feedback" value="tv">
+                <span>TV</span>
+            </label>
+            <label>
+                <input type="radio" name="feedback" value="tiktok">
+                <span>TikTok</span>
+            </label>
+            <label>
+                <input type="radio" name="feedback" value="people">
+                <span>People</span>
+            </label>
+        </div>
+
+        <div class="form-actions">
+            <input type="submit" value="Submit">
+            <input type="reset" value="Reset">
+        </div>
     </form>
+
+    <script>
+        // Optional JavaScript for enhanced UX (e.g., auto-submit on selection)
+        // This is not strictly necessary for the layout but can be added.
+        // Example:
+        // document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        //     radio.addEventListener('change', function() {
+        //         if (this.checked) {
+        //             console.log('Selected:', this.value);
+        //             // If you want to automatically submit the form upon selection:
+        //             // this.form.submit();
+        //         }
+        //     });
+        // });
+    </script>
 </body>
 </html>

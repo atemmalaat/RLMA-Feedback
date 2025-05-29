@@ -1,190 +1,183 @@
+// server.js
 const express = require('express');
 const path = require('path');
-
-//for data storage 
 const fs = require('fs');
-const dataPath = './data/feedbackData.json'
 
 const app = express();
 const PORT = 3000;
 
-//Create functions for reading and writing counts
-//read
-function readCounts() {
-  try {
-    const data = fs.readFileSync(dataPath);
-    return JSON.parse(data);
-  } catch (error) {
-    console.log("Error encountered reading the JSON:", err);
-    return {};
-  }
+// Define paths
+const dataDir = path.join(__dirname, 'data');
+const dataPath = path.join(dataDir, 'feedbackData.json');
+const publicDir = path.join(__dirname, 'public');
+const viewsDir = path.join(__dirname, 'views');
+
+// Ensure data directory exists
+if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
 }
 
+// Initial feedback options and their default counts
+const initialCounts = {
+    facebook: 0,
+    instagram: 0,
+    google: 0,
+    tv: 0,
+    tiktok: 0,
+    people: 0,
+    // Add any new feedback options here with a default count of 0
+};
+
+// --- Functions for reading and writing counts ---
+
+// Function to read counts from feedbackData.json
+function readCounts() {
+    try {
+        // Check if the file exists
+        if (fs.existsSync(dataPath)) {
+            const data = fs.readFileSync(dataPath, 'utf8');
+            // Check if data is empty or not valid JSON
+            if (data.trim() === '') {
+                console.log("JSON file is empty. Initializing with default counts.");
+                writeCounts(initialCounts); // Initialize with default counts
+                return { ...initialCounts }; // Return a copy
+            }
+            const counts = JSON.parse(data);
+            // Ensure all initial keys are present, add if missing (for backward compatibility if new options are added)
+            let needsUpdate = false;
+            for (const key in initialCounts) {
+                if (!counts.hasOwnProperty(key)) {
+                    counts[key] = 0;
+                    needsUpdate = true;
+                }
+            }
+            if (needsUpdate) {
+                writeCounts(counts);
+            }
+            return counts;
+        } else {
+            // File doesn't exist, create it with initial counts
+            console.log("JSON file not found. Creating and initializing with default counts.");
+            writeCounts(initialCounts);
+            return { ...initialCounts }; // Return a copy
+        }
+    } catch (error) {
+        console.error("Error encountered reading or parsing JSON:", error);
+        // If there's an error (e.g., corrupt file), try to re-initialize
+        console.log("Attempting to re-initialize JSON file due to error.");
+        writeCounts(initialCounts);
+        return { ...initialCounts }; // Return a copy of initial counts as a fallback
+    }
+}
+
+// Function to write counts to feedbackData.json
 function writeCounts(counts) {
     try {
-        fs.writeFileSync(dataPath, JSON.stringify(counts, null, 2));
+        fs.writeFileSync(dataPath, JSON.stringify(counts, null, 2), 'utf8');
     } catch (err) {
         console.error("Error writing JSON file:", err);
     }
 }
 
-// Serve static files from public folder
-app.use(express.static(path.join(__dirname, 'public')));
+// --- Middleware ---
+// Serve static files (CSS, images, client-side JS) from the 'public' folder
+app.use(express.static(publicDir));
 
-// Route for feedback form
+// --- Routes ---
+
+// Route for the main feedback form
+// This will serve the index.html file from the 'views' folder
 app.get('/form', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+    res.sendFile(path.join(viewsDir, 'index.html'));
 });
 
-// Route for success page
+// Route for the success page (handles form submission via GET)
 app.get('/success_page', (req, res) => {
-    const source = req.query.feedback;
+    const source = req.query.feedback; // Get the 'feedback' value from the URL query string
     const counts = readCounts();
 
-    if (source && counts.hasOwnProperty(source)) {
-        counts[source]++;
-        writeCounts(counts);
-        console.log(`[✅] ${source} +1 ->`, counts[source]);
+    if (source) { // Check if a source was provided
+        if (counts.hasOwnProperty(source)) {
+            counts[source]++;
+            writeCounts(counts);
+            console.log(`[✅] Feedback received for '${source}'. New count: ${counts[source]}. Current counts:`, counts);
+        } else {
+            console.warn(`[⚠️] Received unknown feedback source: '${source}'. Not counted.`);
+        }
+    } else {
+        console.warn(`[⚠️] Received submission to /success_page without 'feedback' query parameter.`);
     }
 
+    // Send a simple success page
+    // The CSS for this page should also be in the 'public' folder and linked as /styles.css
     res.send(`
         <!DOCTYPE html>
-        <html>
+        <html lang="en">
         <head>
-            <title>Success</title>
-            <link href="/styles.css" rel="stylesheet">
-            <style>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Feedback Submitted!</title>
+            <link href="/styles.css" rel="stylesheet"> <style>
+                body {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                    margin: 0;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                    background-color: #f9f9f9;
+                    text-align: center;
+                    padding: 20px;
+                    box-sizing: border-box;
+                }
+                .success-container {
+                    background-color: #ffffff;
+                    padding: 30px 40px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                }
+                h1 {
+                    color: #28a745; /* Green color for success */
+                    font-size: 2em;
+                    margin-bottom: 20px;
+                }
+                p {
+                    font-size: 1.2em;
+                    color: #333;
+                    margin-bottom: 30px;
+                }
                 .back-button {
                     display: inline-block;
-                    margin-top: 30px;
-                    padding: 15px 30px;
-                    background-color: #007BFF;
+                    padding: 12px 25px;
+                    font-size: 1em;
                     color: white;
-                    font-size: 18px;
+                    background-color: #007AFF;
                     text-decoration: none;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    border-radius: 5px;
+                    transition: background-color 0.3s ease;
                 }
-
                 .back-button:hover {
                     background-color: #0056b3;
-                }
-
-                body {
-                    text-align: center;
-                    padding: 100px;
-                    font-family: Arial, sans-serif;
-                    background-color: #f4f4f4;
                 }
             </style>
         </head>
         <body>
-            <h1>🎉 Thank you for your feedback!</h1>
-            <a href="/form" class="back-button">Give More Feedback</a>
+            <div class="success-container">
+                <h1>🎉 Thank You!</h1>
+                <p>Your feedback has been successfully recorded.</p>
+                <a href="/form" class="back-button">Submit Another Feedback</a>
+            </div>
         </body>
         </html>
     `);
 });
 
-
-// Start the server
+// --- Start the server ---
 app.listen(PORT, () => {
     console.log(`🔥 Server listening at http://localhost:${PORT}`);
+    console.log(`📝 Feedback form available at http://localhost:${PORT}/form`);
+    // Initialize/check data file on server start
+    readCounts();
+    console.log("Current feedback counts on startup:", readCounts());
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-function routing(req, res) {
-    let url = req.url;
-
-    if (url === '/public/styles.css') {
-        const cssPath = path.join(__dirname, 'public', 'styles.css');
-        fs.readFile(cssPath, (err, data) => {
-            if (err) {
-                res.writeHead(404);
-                res.end("CSS not found");
-            } else {
-                res.writeHead(200, {"Content-Type": "text/css"});
-                res.write(data);
-                res.end();
-            }
-        });
-    } else if (url.startsWith('/form')) {
-        res.writeHead(200, {"Content-Type": "text/html"});
-        res.write(`
-            <html>
-    <head>
-      <title>Feedback Form</title>
-      <link href="/public/styles.css" rel="stylesheet">
-    </head>
-    <body>
-      <form action="/success_page">
-        <p>How did you hear about us?</p><br><br>
-        <input type="radio" id="facebook" name="feedback" value="facebook">
-        <label for="facebook">Facebook</label><br>
-
-        <input type="radio" id="instagram" name="feedback" value="instagram">
-        <label for="instagram">Instagram</label><br>
-
-        <input type="radio" id="google" name="feedback" value="google">
-        <label for="google">Google</label><br>
-
-        <input type="radio" id="tv" name="feedback" value="tv">
-        <label for="tv">TV</label><br>
-
-        <input type="radio" id="tiktok" name="feedback" value="tiktok">
-        <label for="tiktok">TikTok</label><br>
-
-        <input type="radio" id="people" name="feedback" value="people">
-        <label for="people">People</label><br>
-
-        <input type="submit" value="Submit">
-        <input type="reset" value="Reset">
-      </form>
-    </body>
-  </html>`);
-        res.end();
-    } else if (url.startsWith('/success_page')) {
-        res.write("This is the success page after the form is submitted - Success");
-        res.end();
-    } else {
-        res.write('Invalid response');
-        res.end();
-    }
-}
-
-//listen on port 3000
-server.listen(3000, () => {
-    console.log("Server listening on port 3000... ");
-})
-*/
